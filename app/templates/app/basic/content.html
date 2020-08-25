@@ -1,0 +1,62 @@
+{% load static %}
+
+<div class="d-flex justify-content-between align-items-center flex-column flex-md-row mb-4">
+    <div class="mr-3">
+        <p class="mb-3 mb-md-0"><strong>{{ properties_all|length }}</strong> results found</p>
+    </div>
+{#    <div>#}
+{#        <label class="form-label mr-2" for="form_sort">Sort by</label>#}
+{#        <select class="selectpicker" name="sort" id="form_sort" data-style="btn-selectpicker" title="">#}
+{#            <option value="sortBy_0">Most popular</option>#}
+{#            <option value="sortBy_1">Recommended</option>#}
+{#            <option value="sortBy_2">Newest</option>#}
+{#            <option value="sortBy_3">Oldest</option>#}
+{#            <option value="sortBy_4">Closest</option>#}
+{#        </select>#}
+{#    </div>#}
+</div>
+<div class="row infinite-container">
+    {% for property in properties %}
+        <!-- place item-->
+        <div class="col-sm-6 mb-5 hover-animate infinite-item"
+             data-marker-id="59c0c8e33b1527bfe2abaf92">
+            <div class="card h-100 border-0 shadow">
+                <div class="card-img-top overflow-hidden gradient-overlay property-photo">
+                    <img class="img-fluid"
+                         src="{{ property.photo.url }}"
+                         alt="{{ property.address }}"/>
+                    <a class="tile-link" href="detail-rooms.html"></a>
+                    <div class="card-img-overlay-top text-right"><a
+                            class="card-fav-icon position-relative z-index-40"
+                            href="javascript: void();">
+                        <svg class="svg-icon text-white">
+                            <use xlink:href="#heart-1"></use>
+                        </svg>
+                    </a></div>
+                </div>
+                <div class="card-body d-flex align-items-center">
+                    <div class="w-100">
+                        <h6 class="card-title"><a class="text-decoration-none text-dark"
+                                                  href="detail-rooms.html">{{ property.address }}</a>
+                        </h6>
+                        <div class="d-flex card-subtitle mb-3">
+                            <p class="flex-grow-1 mb-0 text-muted text-sm">{{ property.zipcode }}</p>
+                        </div>
+                        <p class="card-text text-muted">
+                            <img src="{% static 'img/bed.svg' %}" width="20px"> {{ property.beds }}
+                            <img src="{% static 'img/bath.svg' %}" width="20px"> {{ property.baths }}
+                            <span class="h4 text-primary pl-4">${{ property.price }}</span>/mo</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
+</div>
+{% if properties.has_next %}
+    {% if not request.GET.search_ %}
+        <a class="infinite-more-link" href="?page={{ properties.next_page_number }}"></a>
+    {% else %}
+        <a class="infinite-more-link" href="{{ request.get_full_path }}&page={{ properties.next_page_number }}"></a>
+    {% endif %}
+{% endif %}

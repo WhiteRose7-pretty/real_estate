@@ -1,0 +1,51 @@
+{% load static %}
+
+<form action="" autocomplete="off" class="pt-2" id="search-frm" >
+    <input type="hidden" value="true" name="search_">
+    <input type="hidden" value="1" name="page">
+    <div class="row">
+        <div class="col-xl-4 col-md-6 mb-4">
+            <label class="form-label" for="form_type">Rent type</label>
+            {{ form.rent_type }}
+        </div>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <label class="form-label" for="form_guests">Pets Allowed</label>
+            {{ form.pet }}
+        </div>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <label class="form-label" for="form_type">Beds</label>
+            {{ form.bed }}
+        </div>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <label class="form-label">Price range</label>
+            <div class="text-primary" id="slider-snap"></div>
+            <div class="nouislider-values">
+                <div class="min">From $<span id="slider-snap-value-from"></span></div>
+                <div class="max">To $<span id="slider-snap-value-to"></span></div>
+            </div>
+            {{ form.price_min }}
+            {{ form.price_max }}
+        </div>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <label class="form-label" for="form_type">Search</label>
+            {{ form.search_text }}
+        </div>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <label class="form-label" for="form_type">NEIGHBOURHOOD</label>
+            <div class="custom-control custom-switch">
+                {{ form.near_check }}
+                <label class="custom-control-label" for="id_near_check"> <span
+                        class="text-sm">Near LOS-ANGELES-METRO</span></label>
+            </div>
+        </div>
+
+    </div>
+{#    <div class="row">#}
+{#          <div class="col-sm-6 mb-4 order-2 order-sm-1">#}
+{##}
+{#          </div>#}
+{#          <div class="col-sm-6 mb-4 order-2 order-sm-1">#}
+{#            <button class="btn btn-primary" style="float:right" type="submit"> <i class="fas fa-search mr-1"></i>Search </button>#}
+{#          </div>#}
+{#    </div>#}
+</form>
