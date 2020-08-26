@@ -17,20 +17,12 @@
 <script src="{% static 'js/waypoint/infinite.min.js' %}"></script>
 <script src="{% static 'js/form/jquery.form.js' %}"></script>
 <script async defer
-            src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places&key=AIzaSyD8A1j9FdYG0tGsPwf8Sa8aBOVkjHvGPws&callback=initialize&language=pl"></script>
-
-
+        src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places&key=AIzaSyD8A1j9FdYG0tGsPwf8Sa8aBOVkjHvGPws"></script>
 
 <script>var basePath = ''</script>
 <!-- Main Theme JS file    -->
 <script src="{% static 'js/theme.js' %}"></script>
-<!-- Map-->
-<script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
-        integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
-        crossorigin=""></script>
-<!-- Available tile layers-->
-<script src="{% static 'js/map-layers.js' %}"></script>
-<script src="{% static 'js/map-category.js' %}"></script>
+
 <!-- Daterange picker-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
 <script src="{% static 'vendor/nouislider/nouislider.min.js' %}"></script>
@@ -56,34 +48,58 @@
 </script>
 
 <script>
-    var snapSlider = document.getElementById('slider-snap');
+    $(document).ready(function () {
+        infinit_scroll();
+        read_data_Map();
+    });
 
-    noUiSlider.create(snapSlider, {
-        start: [0, 15000],
-        snap: false,
-        connect: true,
-        step: 100,
-        range: {
-            'min': 0,
-            'max': 15000
+    function read_data_Map(){
+        var token = '{{csrf_token}}';
+        $.ajax({
+            headers: {
+                "X-CSRFToken": token
+            },
+            type: 'post',
+            url: '',
+            data: {
+                'command': 'read_location'
+            },
+            success: function (data) {
+                init_map(data)
+            },
+            error: function (err) {
+                return err;
+            }
+        });
+    }
+
+    function init_map(data) {
+        var geocoder;
+        var autocomplete = new google.maps.places.Autocomplete((document.getElementById('search_location')), {
+            types: ['geocode'],
+        });
+        google.maps.event.addListener(autocomplete, 'place_changed', function() {
+              $('#search-frm').submit();
+        });
+        geocoder = new google.maps.Geocoder();
+        const latlng = new google.maps.LatLng(52.219396, 21.002137);
+        const myOptions = {
+            zoom: 10,
+            center: latlng,
+            mapTypeControl: true,
+            mapTypeControlOptions: {style: google.maps.MapTypeControlStyle.DROPDOWN_MENU},
+            navigationControl: true,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        let map = new google.maps.Map(document.getElementById('categorySideMap'), myOptions);
+        for (let i = 0; i < data.length; i++) {
+            console.log(data[i].fields.price);
+            display_marker(map, geocoder, data[i].fields.address , data[i].fields.zipcode,
+                '$'+ data[i].fields.price, '/media/'+ data[i].fields.photo);
         }
-    });
-    var snapValues = [
-        document.getElementById('slider-snap-value-from'),
-        document.getElementById('slider-snap-value-to')
-    ];
-    var inputValues = [
-        document.getElementById('slider-snap-input-from'),
-        document.getElementById('slider-snap-input-to')
-    ];
-    snapSlider.noUiSlider.on('update', function (values, handle) {
-        console.log(values[handle]);
-        snapValues[handle].innerHTML = Math.round(values[handle]);
-        inputValues[handle].value = values[handle];
-    });
+    }
 
-
-    function f() {
+    function infinit_scroll() {
         var infinite = new Waypoint.Infinite({
             element: $('.infinite-container')[0],
             handler: function (direction) {
@@ -99,28 +115,88 @@
         });
     }
 
-    $(document).ready(function () {
-        f();
-        var start = {lat: 52.219396, lng: 21.002137};
-        let map = new google.maps.Map(document.getElementById('categorySideMap'), {zoom: 13, center: start});
-    });
+    function display_marker(map, geocoder, address, zipcode ,price, image) {
+        if (geocoder) {
+            geocoder.geocode({'address': address}, function (results, status) {
+                if (status === google.maps.GeocoderStatus.OK) {
+                    if (status !== google.maps.GeocoderStatus.ZERO_RESULTS) {
+                        map.setCenter(results[0].geometry.location);
 
+                        var card = `<div class="marker-img-container">
+                                        <img src="${image}" class="marker-img">
+                                    </div>
+                                    <p class="m-1 text-muted text-sm"><b>${address}</b></p>
+                                    <p class="m-1 text-muted text-sm">${zipcode}</p>
+                                    <p class="m-1 text-primary text-sm"><b>${price}/mo</b></p>`;
+                        var infowindow = new google.maps.InfoWindow(
+                            {
+                                content: card,
+                                size: new google.maps.Size(200, 200)
+                            });
 
+                        var marker = new google.maps.Marker({
+                            position: results[0].geometry.location,
+                            map: map,
+                            icon:'/static/img/marker.svg',
+                            title: address,
+                            scaledSize: new google.maps.Size(10, 10),
+                            origin: new google.maps.Point(0,0), // origin
+                            anchor: new google.maps.Point(0, 0), // anchor
+                        });
 
-     $('#search-frm').ajaxForm({
-        success: function (data) {
-            $('.ajax-container').empty();
-            $('.ajax-container').html($.parseHTML(data));
-            f();
+                        google.maps.event.addListener(marker, 'mouseover', function () {
+                            infowindow.open(map, marker);
+                        });
+
+                        google.maps.event.addListener(marker, 'mouseout', function () {
+                            infowindow.close(map, marker);
+                        });
+
+                    } else {
+                        alert("No results found");
+                    }
+                } else {
+                    alert("Geocode was not successful for the following reason: " + status);
+                }
+            });
+        }
+    }
+
+    var snapSlider = document.getElementById('slider-snap');
+
+    noUiSlider.create(snapSlider, {
+        start: [0, 15000],
+        snap: false,
+        connect: true,
+        step: 100,
+        range: {
+            'min': 0,
+            'max': 15000
         }
     });
 
+    var snapValues = [
+        document.getElementById('slider-snap-value-from'),
+        document.getElementById('slider-snap-value-to')
+    ];
+    var inputValues = [
+        document.getElementById('slider-snap-input-from'),
+        document.getElementById('slider-snap-input-to')
+    ];
+    snapSlider.noUiSlider.on('update', function (values, handle) {
+        snapValues[handle].innerHTML = Math.round(values[handle]);
+        inputValues[handle].value = values[handle];
+    });
+
+    $(document).on('change', '#id_location', function () {
+        $('#search-frm').submit()
+    });
 
     $(document).on('change', '#id_pet', function () {
         $('#search-frm').submit()
     });
 
-    $(document).on('change', '#id_rent-type', function () {
+    $(document).on('change', '#id_rent_type', function () {
         $('#search-frm').submit()
     });
 

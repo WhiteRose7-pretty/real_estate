@@ -10,6 +10,8 @@ BED_CHOICE = (
 
 
 class PropertySearch(forms.Form):
+    location = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control auto-complete', 'id': 'search_location', 'placeholder': 'Enter your location'}), required=False, )
+
     rent_type = forms.ModelChoiceField(queryset=RentType.objects.all(),
                                        required=False,
                                        empty_label=None,
@@ -35,3 +37,5 @@ class PropertySearch(forms.Form):
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Keywords'}),  required=False)
     near_check = forms.BooleanField(widget=forms.CheckboxInput(attrs={'class': 'custom-control-input'}),
                                     required=False)
+
+

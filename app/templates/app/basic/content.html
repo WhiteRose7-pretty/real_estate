@@ -42,6 +42,12 @@
                         <div class="d-flex card-subtitle mb-3">
                             <p class="flex-grow-1 mb-0 text-muted text-sm">{{ property.zipcode }}</p>
                         </div>
+                         <div class="d-flex card-subtitle mb-3">
+                            <span class="flex-grow-1 mb-0 text-muted text-sm">{{ property.type.name }}</span>
+{#                            {% for item in property.pets.all %}#}
+{#                                <span class="flex-grow-1 mb-0 text-primary text-sm">#{{ item.name }}</span>#}
+{#                            {% endfor %}#}
+                        </div>
                         <p class="card-text text-muted">
                             <img src="{% static 'img/bed.svg' %}" width="20px"> {{ property.beds }}
                             <img src="{% static 'img/bath.svg' %}" width="20px"> {{ property.baths }}

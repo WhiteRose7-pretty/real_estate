@@ -21,7 +21,7 @@ class Property(models.Model):
     owner = models.ForeignKey(CustomUser, null=True, related_name='properties', on_delete=models.CASCADE)
     photo = models.FileField()
     type = models.ForeignKey(RentType, null=True, related_name='properties', on_delete=models.CASCADE)
-    pets = models.ManyToManyField(Pets, null=True, related_name='properties')
+    pets = models.ManyToManyField(Pets, null=True, related_name='properties', blank=True)
     beds = models.IntegerField(default=0)
     baths = models.IntegerField(default=0)
     price = models.IntegerField(default=0)
