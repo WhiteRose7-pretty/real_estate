@@ -29,6 +29,20 @@ def home(request):
     else:
         properties_all = properties_all.filter(pets=None)
 
+    # bed filter
+    beds = request.GET.get('bed', 0)
+    properties_all = properties_all.filter(beds__gte=beds)
+
+    # price filter
+    price_min = int(request.GET.get('price_min', 0))
+    price_max = int(request.GET.get('price_max', 15000))
+    properties_all = properties_all.filter(price__range=(price_min, price_max))
+
+    # text filter
+    search_text = request.GET.get('search_text', False)
+    if search_text:
+        properties_all = properties_all.filter(address__contains=search_text)
+
     page = request.GET.get('page', 1)
     paginator_property = Paginator(properties_all, 4)
 

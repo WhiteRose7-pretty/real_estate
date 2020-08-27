@@ -49,8 +49,11 @@
 
 <script>
     $(document).ready(function () {
+
         infinit_scroll();
+        init_price_filter();
         read_data_Map();
+
     });
 
     function read_data_Map(){
@@ -162,31 +165,41 @@
         }
     }
 
-    var snapSlider = document.getElementById('slider-snap');
+    function init_price_filter() {
+        var snapSlider = document.getElementById('slider-snap');
 
-    noUiSlider.create(snapSlider, {
-        start: [0, 15000],
-        snap: false,
-        connect: true,
-        step: 100,
-        range: {
-            'min': 0,
-            'max': 15000
-        }
-    });
+         var snapValues = [
+            document.getElementById('slider-snap-value-from'),
+            document.getElementById('slider-snap-value-to')
+        ];
+        var inputValues = [
+            $('#id_price_min'),
+            $('#id_price_max')
+        ];
 
-    var snapValues = [
-        document.getElementById('slider-snap-value-from'),
-        document.getElementById('slider-snap-value-to')
-    ];
-    var inputValues = [
-        document.getElementById('slider-snap-input-from'),
-        document.getElementById('slider-snap-input-to')
-    ];
-    snapSlider.noUiSlider.on('update', function (values, handle) {
-        snapValues[handle].innerHTML = Math.round(values[handle]);
-        inputValues[handle].value = values[handle];
-    });
+        noUiSlider.create(snapSlider, {
+            start: [inputValues[0].val(), inputValues[1].val()],
+            snap: false,
+            connect: true,
+            step: 100,
+            range: {
+                'min': 0,
+                'max': 15000
+            }
+        });
+
+
+        snapSlider.noUiSlider.on('update', function (values, handle) {
+            var temp = inputValues[handle].val();
+            inputValues[handle].val(Math.round(values[handle]));
+            snapValues[handle].innerHTML = Math.round(values[handle]);
+            if(temp !== inputValues[handle].val()){
+                $('#search-frm').submit();
+            }
+
+        });
+    }
+
 
     $(document).on('change', '#id_location', function () {
         $('#search-frm').submit()
@@ -204,11 +217,11 @@
         $('#search-frm').submit()
     });
 
-    $(document).on('change', '#id_price_min', function () {
+    $(document).on('change', '#slider-snap-value-from', function () {
         $('#search-frm').submit()
     });
 
-    $(document).on('change', '#id_price_max', function () {
+    $(document).on('change', '#slider-snap-value-to', function () {
         $('#search-frm').submit()
     });
 
@@ -218,9 +231,7 @@
         }
     };
 
-    $(document).on('change', '#id_near_check', function () {
-        $('#search-frm').submit()
-    });
+
 
 
 </script>

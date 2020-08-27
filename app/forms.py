@@ -31,8 +31,8 @@ class PropertySearch(forms.Form):
                             widget=forms.Select(attrs={'class': 'form-control selectpicker',
                                                        'data-style': "btn-selectpicker"}))
 
-    price_min = forms.CharField(widget=forms.HiddenInput(attrs={'id': 'slider-snap-input-from'}), required=False)
-    price_max = forms.CharField(widget=forms.HiddenInput(attrs={'id': 'slider-snap-input-to'}), required=False, )
+    price_min = forms.CharField(widget=forms.HiddenInput(attrs={'id': 'id_price_min'}), required=False)
+    price_max = forms.CharField(widget=forms.HiddenInput(attrs={'id': 'id_price_max'}), required=False, )
     search_text = forms.CharField(
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Keywords'}),  required=False)
     near_check = forms.BooleanField(widget=forms.CheckboxInput(attrs={'class': 'custom-control-input'}),
