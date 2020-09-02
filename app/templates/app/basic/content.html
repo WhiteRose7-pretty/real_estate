@@ -18,7 +18,7 @@
 <div class="row infinite-container">
     {% for property in properties %}
         <!-- place item-->
-        <div class="col-sm-6 mb-5 hover-animate infinite-item"
+        <div class="col-sm-6 mb-3  px-2  hover-animate infinite-item"
              data-marker-id="59c0c8e33b1527bfe2abaf92">
             <div class="card h-100 border-0 shadow">
                 <div class="card-img-top overflow-hidden gradient-overlay property-photo">
@@ -51,7 +51,7 @@
                         <p class="card-text text-muted">
                             <img src="{% static 'img/bed.svg' %}" width="20px"> {{ property.beds }}
                             <img src="{% static 'img/bath.svg' %}" width="20px"> {{ property.baths }}
-                            <span class="h4 text-primary pl-4">${{ property.price }}</span>/mo</p>
+                            <span class="text-price" style="float: right"><span class="h4 text-primary ">${{ property.price }}</span>/mo</span></p>
                     </div>
                 </div>
             </div>
@@ -59,6 +59,7 @@
     {% endfor %}
 
 </div>
+
 {% if properties.has_next %}
     {% if not request.GET.search_ %}
         <a class="infinite-more-link" href="?page={{ properties.next_page_number }}"></a>

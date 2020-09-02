@@ -32,3 +32,27 @@
 #search-frm .form-label{
     display: none!important;
 }
+
+.noUi-horizontal .noUi-handle {
+    width: 9px;
+    height: 9px;
+    right: -2px !important;
+    top: -3px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: none;
+    outline: none;
+}
+
+.noUi-handle:hover {
+    transform: scale(1.2);
+}
+
+a{
+    color: inherit!important;
+}
+
+a:hover{
+    text-decoration: none;
+}

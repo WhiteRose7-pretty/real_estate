@@ -53,8 +53,11 @@
         infinit_scroll();
         init_price_filter();
         read_data_Map();
+        setup_ajax_form();
 
     });
+
+    function read_boundary()
 
     function read_data_Map(){
         var token = '{{csrf_token}}';
@@ -79,16 +82,20 @@
     function init_map(data) {
         var geocoder;
         var autocomplete = new google.maps.places.Autocomplete((document.getElementById('search_location')), {
-            types: ['geocode'],
+            types: ['(cities)'],
+            componentRestrictions: {
+                 country: ["us"],
+            }
         });
         google.maps.event.addListener(autocomplete, 'place_changed', function() {
               $('#search-frm').submit();
         });
         geocoder = new google.maps.Geocoder();
-        const latlng = new google.maps.LatLng(52.219396, 21.002137);
+        const latlng = new google.maps.LatLng(36.771109, -119.637934);
         const myOptions = {
-            zoom: 10,
+            zoom: 5.5,
             center: latlng,
+            scrollwheel: false,
             mapTypeControl: true,
             mapTypeControlOptions: {style: google.maps.MapTypeControlStyle.DROPDOWN_MENU},
             navigationControl: true,
@@ -193,24 +200,58 @@
             var temp = inputValues[handle].val();
             inputValues[handle].val(Math.round(values[handle]));
             snapValues[handle].innerHTML = Math.round(values[handle]);
-            if(temp !== inputValues[handle].val()){
+/*            if(temp !== inputValues[handle].val()){
                 $('#search-frm').submit();
             }
+*/
+        });
+    }
 
+    function setup_ajax_form(){
+        $('#search-frm').ajaxForm({
+        success:function(data)
+        {
+            console.log($.parseHTML(data));
+            $('.ajax-container').empty();
+            $('.ajax-container').html($.parseHTML(data));
+            infinit_scroll();
+
+        }
+    });
+    }
+
+    function submit_frm(){
+        var frmdata = $('#search-frm').serialize();
+        console.log(frmdata);
+        $.ajax({
+            type: 'get',
+            url: '/',
+            data: frmdata,
+            success: function (data) {
+                $('.ajax-container').empty();
+                $('.ajax-container').html($.parseHTML(data));
+                window.history.pushState(null, 'real estate', this.url);
+                infinit_scroll();
+            },
+            error: function (err) {
+                return err;
+            }
         });
     }
 
 
+
     $(document).on('change', '#id_location', function () {
-        $('#search-frm').submit()
+        submit_frm();
     });
 
+
     $(document).on('change', '#id_pet', function () {
-        $('#search-frm').submit()
+        $('#search-frm').submit();
     });
 
     $(document).on('change', '#id_rent_type', function () {
-        $('#search-frm').submit()
+        submit_frm();
     });
 
     $(document).on('change', '#id_bed', function () {

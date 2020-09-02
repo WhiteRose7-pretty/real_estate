@@ -8,13 +8,13 @@
 {% include 'app/basic/header.html' %}
 
 
-<div class="container-fluid">
+<div class="container-fluid" style="min-height: Calc(100vh - 80px - 71px);">
     <div class="row">
-        <div class="col-lg-6 py-4 p-xl-5">
+        <div class="col-lg-6 py-4 p-xl-4">
 
             {% include 'app/basic/search_form.html' %}
 
-            <hr class="my-4">
+            <hr class="mb-4 mt-1">
             <div class="ajax-container">
                 {% include 'app/basic/content.html' %}
             </div>
@@ -39,14 +39,10 @@
                 </div>
                 <div class="col-md-6">
                     <ul class="list-inline mb-0 mt-2 mt-md-0 text-center text-md-right">
-                        <li class="list-inline-item"><img class="w-2rem" src="{% static 'img/visa.svg' %}" alt="...">
+                        <li class="list-inline-item">
+                            Create &nbsp;<a class="text-sm mb-md-0" href="https://tgcoders.pl/" target="_blank">TGcoders.pl</a>
                         </li>
-                        <li class="list-inline-item"><img class="w-2rem" src="{% static 'img/mastercard.svg' %}"
-                                                          alt="..."></li>
-                        <li class="list-inline-item"><img class="w-2rem" src="{% static 'img/paypal.svg' %}" alt="...">
-                        </li>
-                        <li class="list-inline-item"><img class="w-2rem" src="{% static 'img/western-union.svg' %}"
-                                                          alt="..."></li>
+
                     </ul>
                 </div>
             </div>

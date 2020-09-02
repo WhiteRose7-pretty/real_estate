@@ -18,7 +18,7 @@ class PropertySearch(forms.Form):
                                        widget=forms.SelectMultiple(attrs={'class': 'form-control selectpicker',
                                                                           'data-style': "btn-selectpicker",
                                                                           'data-selected-text-format': "count &gt; 1",
-                                                                          'title': 'All Rent Type'}))
+                                                                          'title': 'All Rent Types'}))
     pet = forms.ModelChoiceField(queryset=Pets.objects.all(),
                                  empty_label=None,
                                  required=False,
@@ -32,7 +32,7 @@ class PropertySearch(forms.Form):
                                                        'data-style': "btn-selectpicker"}))
 
     price_min = forms.CharField(widget=forms.HiddenInput(attrs={'id': 'id_price_min'}), required=False)
-    price_max = forms.CharField(widget=forms.HiddenInput(attrs={'id': 'id_price_max'}), required=False, )
+    price_max = forms.CharField(widget=forms.HiddenInput(attrs={'id': 'id_price_max', 'value': '15000'}), required=False, )
     search_text = forms.CharField(
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Keywords'}),  required=False)
     near_check = forms.BooleanField(widget=forms.CheckboxInput(attrs={'class': 'custom-control-input'}),

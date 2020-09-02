@@ -1,6 +1,6 @@
 {% load static %}
 
-<form action="" autocomplete="off" class="pt-1" id="search-frm" >
+<form action="" autocomplete="off" id="search-frm" >
     <div class="mb-4">
         {{ form.location}}
     </div>
@@ -18,7 +18,7 @@
             <label class="form-label" for="form_type">Beds</label>
             {{ form.bed }}
         </div>
-        <div class="col-xl-6 col-md-6 mb-4">
+        <div class="col-xl-4 col-md-6 mb-4">
             <label class="form-label">Price range</label>
             <div class="text-primary" id="slider-snap"></div>
             <div class="nouislider-values">
@@ -28,13 +28,19 @@
             {{ form.price_min }}
             {{ form.price_max }}
         </div>
-        <div class="col-xl-6 col-md-6 mb-4">
+        <div class="col-xl-4 col-md-6 mb-4">
             <label class="form-label" for="form_type">Search</label>
             {{ form.search_text }}
+        </div>
+        <div class="col-xl-4 col-md-6 mb-4">
+
+            <button class="btn btn-primary" type="submit" style="width: 100%"> <i class="fas fa-search mr-1"></i>Search </button>
         </div>
 
         <input type="hidden" value="true" name="search_">
         <input type="hidden" value="1" name="page">
+
+
     </div>
 {#    <div class="row">#}
 {#          <div class="col-sm-6 mb-4 order-2 order-sm-1">#}
