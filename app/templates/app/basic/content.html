@@ -1,5 +1,9 @@
 {% load static %}
 
+
+
+
+
 <div class="d-flex justify-content-between align-items-center flex-column flex-md-row mb-4">
     <div class="mr-3">
         <p class="mb-3 mb-md-0"><strong>{{ properties_all|length }}</strong> results found</p>
@@ -16,47 +20,54 @@
 {#    </div>#}
 </div>
 <div class="row infinite-container">
-    {% for property in properties %}
-        <!-- place item-->
-        <div class="col-sm-6 mb-3  px-2  hover-animate infinite-item"
-             data-marker-id="59c0c8e33b1527bfe2abaf92">
-            <div class="card h-100 border-0 shadow">
-                <div class="card-img-top overflow-hidden gradient-overlay property-photo">
-                    <img class="img-fluid"
-                         src="{{ property.photo.url }}"
-                         alt="{{ property.address }}"/>
-                    <a class="tile-link" href="detail-rooms.html"></a>
-                    <div class="card-img-overlay-top text-right"><a
-                            class="card-fav-icon position-relative z-index-40"
-                            href="javascript: void();">
-                        <svg class="svg-icon text-white">
-                            <use xlink:href="#heart-1"></use>
-                        </svg>
-                    </a></div>
-                </div>
-                <div class="card-body d-flex align-items-center">
-                    <div class="w-100">
-                        <h6 class="card-title"><a class="text-decoration-none text-dark"
-                                                  href="detail-rooms.html">{{ property.address }}</a>
-                        </h6>
-                        <div class="d-flex card-subtitle mb-3">
-                            <p class="flex-grow-1 mb-0 text-muted text-sm">{{ property.zipcode }}</p>
+    {% if properties_all.length > 0 %}
+        {% for property in properties %}
+            <!-- place item-->
+            <div class="col-sm-6 mb-3  px-2  hover-animate infinite-item"
+                 data-marker-id="59c0c8e33b1527bfe2abaf92">
+                <div class="card h-100 border-0 shadow">
+                    <div class="card-img-top overflow-hidden gradient-overlay property-photo">
+                        <img class="img-fluid"
+                             src="{{ property.photo.url }}"
+                             alt="{{ property.address }}"/>
+                        <a class="tile-link" href="detail-rooms.html"></a>
+                        <div class="card-img-overlay-top text-right"><a
+                                class="card-fav-icon position-relative z-index-40"
+                                href="javascript: void();">
+                            <svg class="svg-icon text-white">
+                                <use xlink:href="#heart-1"></use>
+                            </svg>
+                        </a></div>
+                    </div>
+                    <div class="card-body d-flex align-items-center">
+                        <div class="w-100">
+                            <h6 class="card-title"><a class="text-decoration-none text-dark"
+                                                      href="detail-rooms.html">{{ property.address }}</a>
+                            </h6>
+                            <div class="d-flex card-subtitle mb-3">
+                                <p class="flex-grow-1 mb-0 text-muted text-sm">{{ property.zipcode }}</p>
+                            </div>
+                             <div class="d-flex card-subtitle mb-3">
+                                <span class="flex-grow-1 mb-0 text-muted text-sm">{{ property.type.name }}</span>
+    {#                            {% for item in property.pets.all %}#}
+    {#                                <span class="flex-grow-1 mb-0 text-primary text-sm">#{{ item.name }}</span>#}
+    {#                            {% endfor %}#}
+                            </div>
+                            <p class="card-text text-muted">
+                                <img src="{% static 'img/bed.svg' %}" width="20px"> {{ property.beds }}
+                                <img src="{% static 'img/bath.svg' %}" width="20px"> {{ property.baths }}
+                                <span class="text-price" style="float: right"><span class="h4 text-primary ">${{ property.price }}</span>/mo</span></p>
                         </div>
-                         <div class="d-flex card-subtitle mb-3">
-                            <span class="flex-grow-1 mb-0 text-muted text-sm">{{ property.type.name }}</span>
-{#                            {% for item in property.pets.all %}#}
-{#                                <span class="flex-grow-1 mb-0 text-primary text-sm">#{{ item.name }}</span>#}
-{#                            {% endfor %}#}
-                        </div>
-                        <p class="card-text text-muted">
-                            <img src="{% static 'img/bed.svg' %}" width="20px"> {{ property.beds }}
-                            <img src="{% static 'img/bath.svg' %}" width="20px"> {{ property.baths }}
-                            <span class="text-price" style="float: right"><span class="h4 text-primary ">${{ property.price }}</span>/mo</span></p>
                     </div>
                 </div>
             </div>
+        {% endfor %}
+    {% else %}
+        <div class="p-3">
+            <h4> There are not properties you need. Please search again. </h4>
         </div>
-    {% endfor %}
+
+    {% endif %}
 
 </div>
 

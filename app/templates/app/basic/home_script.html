@@ -48,6 +48,7 @@
 </script>
 
 <script>
+    var map;
     $(document).ready(function () {
 
         infinit_scroll();
@@ -55,9 +56,9 @@
         read_data_Map();
         setup_ajax_form();
 
+
     });
 
-    function read_boundary()
 
     function read_data_Map(){
         var token = '{{csrf_token}}';
@@ -88,7 +89,7 @@
             }
         });
         google.maps.event.addListener(autocomplete, 'place_changed', function() {
-              $('#search-frm').submit();
+              submit_frm();
         });
         geocoder = new google.maps.Geocoder();
         const latlng = new google.maps.LatLng(36.771109, -119.637934);
@@ -101,12 +102,19 @@
             navigationControl: true,
             mapTypeId: google.maps.MapTypeId.ROADMAP
         };
-        let map = new google.maps.Map(document.getElementById('categorySideMap'), myOptions);
+        map = new google.maps.Map(document.getElementById('categorySideMap'), myOptions);
+
         for (let i = 0; i < data.length; i++) {
             console.log(data[i].fields.price);
             display_marker(map, geocoder, data[i].fields.address , data[i].fields.zipcode,
                 '$'+ data[i].fields.price, '/media/'+ data[i].fields.photo);
         }
+
+        read_boundary('california', map);
+        show_city_bound();
+        var address = $('#search_location').val().split(',')[0];
+        show_city_bound(address, map);
+
     }
 
     function infinit_scroll() {
@@ -150,7 +158,7 @@
                             icon:'/static/img/marker.svg',
                             title: address,
                             scaledSize: new google.maps.Size(10, 10),
-                            origin: new google.maps.Point(0,0), // origin
+                            origin: new google.maps.Point(0, 0), // origin
                             anchor: new google.maps.Point(0, 0), // anchor
                         });
 
@@ -201,7 +209,7 @@
             inputValues[handle].val(Math.round(values[handle]));
             snapValues[handle].innerHTML = Math.round(values[handle]);
 /*            if(temp !== inputValues[handle].val()){
-                $('#search-frm').submit();
+                submit_frm();
             }
 */
         });
@@ -211,18 +219,15 @@
         $('#search-frm').ajaxForm({
         success:function(data)
         {
-            console.log($.parseHTML(data));
             $('.ajax-container').empty();
             $('.ajax-container').html($.parseHTML(data));
             infinit_scroll();
-
         }
     });
     }
 
     function submit_frm(){
         var frmdata = $('#search-frm').serialize();
-        console.log(frmdata);
         $.ajax({
             type: 'get',
             url: '/',
@@ -232,6 +237,9 @@
                 $('.ajax-container').html($.parseHTML(data));
                 window.history.pushState(null, 'real estate', this.url);
                 infinit_scroll();
+                read_data_Map();
+                var address = $('#search_location').val().split(',')[0];
+                show_city_bound(address, map);
             },
             error: function (err) {
                 return err;
@@ -239,7 +247,106 @@
         });
     }
 
+    function show_city_bound(city, map) {
+        var request = new XMLHttpRequest();
+        var url = '/static/data/usa.kml';
+        var bound_data = [];
+        request.open("GET", url, true);
+        request.send();
+        request.onreadystatechange = function() {
+            if (request.readyState == 4) {
+                if (window.DOMParser)
+                {
+                    parser = new DOMParser();
+                    xmlDoc = parser.parseFromString(request.responseText, "text/xml");
+                }
+                else // Internet Explorer
+                {
+                    xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+                    xmlDoc.async = false;
+                    xmlDoc.loadXML(data);
+                }
 
+                $(xmlDoc).find("Placemark").each(function () {
+                    $(this).find("SimpleData").each(function () {
+                        if($(this).attr('name') === 'NAME_2'){
+                            if($(this).text() == city){
+                                $(this).parent().parent().parent().find('coordinates').each(function () {
+                                     var points = buildCoordinatesArrayFromString($(this).text());
+                                     draw_bound(points, map, '#0000ff');
+                                });
+                            }
+                        }
+                    })
+                });
+            }
+        }
+
+    }
+
+    function buildCoordinatesArrayFromString(MultiGeometryCoordinates){
+        var finalData = [];
+        var grouped = MultiGeometryCoordinates.split(" ");
+        grouped.forEach(function(item, i){
+            let a = item.trim().split(',');
+            finalData.push({
+                lng: parseFloat(a[0]),
+                lat: parseFloat(a[1])
+            });
+        });
+        return finalData;
+    }
+
+    function read_boundary(city, map){
+        var request = new XMLHttpRequest();
+        var url = '/static/data/'+city+'.xml';
+        var bound_data = [];
+        request.open("GET", url, true);
+        request.send();
+        request.onreadystatechange = function() {
+            if (request.readyState == 4) {
+                 if (window.DOMParser)
+                {
+                    parser = new DOMParser();
+                    xmlDoc = parser.parseFromString(request.responseText, "text/xml");
+                }
+                else
+                {
+                    xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+                    xmlDoc.async = false;
+                    xmlDoc.loadXML(data);
+                }
+
+                var points = xmlDoc.getElementsByTagName("point");
+
+                for (var i = 0; i < points.length; i++) {
+                    bound_data.push({
+                        lng: parseFloat(points[i].getAttribute("lng")),
+                        lat: parseFloat(points[i].getAttribute("lat"))
+                    })
+                }
+
+                // Construct the polygon.
+
+                draw_bound(bound_data, map, '#0000ff');
+
+            }
+        }
+    }
+
+    function draw_bound(points, map, color='#50e3c2'){
+         var BucaramangaPolygon = new google.maps.Polygon({
+            paths: points,
+            strokeColor: color,
+            strokeOpacity: 0.8,
+            strokeWeight: 1,
+            fillColor: color,
+            fillOpacity: 0.02
+        });
+
+        // Draw the polygon on the desired map instance
+        BucaramangaPolygon.setMap(map);
+    }
 
     $(document).on('change', '#id_location', function () {
         submit_frm();
@@ -247,7 +354,7 @@
 
 
     $(document).on('change', '#id_pet', function () {
-        $('#search-frm').submit();
+        submit_frm();
     });
 
     $(document).on('change', '#id_rent_type', function () {
