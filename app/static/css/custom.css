@@ -1,8 +1,8 @@
-.property-photo{
+.property-photo {
     height: 230px;
 }
 
-.property-photo .img-fluid, .marker-img{
+.property-photo .img-fluid, .marker-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -10,7 +10,7 @@
     overflow: hidden;
 }
 
-.marker-img-container{
+.marker-img-container {
     width: 200px;
     height: 150px;
 }
@@ -19,18 +19,18 @@
     padding: 0;
 }
 
-.gm-style-iw-d{
+.gm-style-iw-d {
     width: 200px;
-    overflow: initial!important;
+    overflow: initial !important;
 }
 
-.gm-style-iw-d div{
+.gm-style-iw-d div {
     width: 200px;
 
 }
 
-#search-frm .form-label{
-    display: none!important;
+#search-frm .form-label {
+    display: none !important;
 }
 
 .noUi-horizontal .noUi-handle {
@@ -49,10 +49,24 @@
     transform: scale(1.2);
 }
 
-a{
-    color: inherit!important;
+a {
+    color: inherit !important;
 }
 
-a:hover{
+a:hover {
     text-decoration: none;
+}
+
+.liked {
+    background-color: #50E3C2;
+}
+
+.liked .svg-icon {
+    color: white !important;
+}
+
+.property-photo {
+    background-image: url("../img/default.png");
+    background-repeat: no-repeat;
+    background-position: center;
 }

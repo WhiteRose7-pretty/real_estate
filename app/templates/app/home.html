@@ -24,31 +24,10 @@
             <div class="map-full shadow-left" id="categorySideMap"></div>
         </div>
 
+        <input type="hidden" id="log" value="{{ request.user.is_authenticated }}">
     </div>
 </div>
 
-<!-- Footer-->
-<footer class="position-relative z-index-10 d-print-none">
-
-    <!-- Copyright section of the footer-->
-    <div class="py-4 font-weight-light bg-gray-800 text-gray-300">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-6 text-center text-md-left">
-                    <p class="text-sm mb-md-0">&copy; 2020, Your company. All rights reserved.</p>
-                </div>
-                <div class="col-md-6">
-                    <ul class="list-inline mb-0 mt-2 mt-md-0 text-center text-md-right">
-                        <li class="list-inline-item">
-                            Create &nbsp;<a class="text-sm mb-md-0" href="https://tgcoders.pl/" target="_blank">TGcoders.pl</a>
-                        </li>
-
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-</footer>
 
 <!-- Script-->
 {% include 'app/basic/home_script.html' %}

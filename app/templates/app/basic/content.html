@@ -20,7 +20,8 @@
 {#    </div>#}
 </div>
 <div class="row infinite-container">
-    {% if properties_all.length > 0 %}
+
+    {% if properties_all.count > 0 %}
         {% for property in properties %}
             <!-- place item-->
             <div class="col-sm-6 mb-3  px-2  hover-animate infinite-item"
@@ -30,11 +31,11 @@
                         <img class="img-fluid"
                              src="{{ property.photo.url }}"
                              alt="{{ property.address }}"/>
-                        <a class="tile-link" href="detail-rooms.html"></a>
-                        <div class="card-img-overlay-top text-right"><a
-                                class="card-fav-icon position-relative z-index-40"
-                                href="javascript: void();">
-                            <svg class="svg-icon text-white">
+                        <a class="tile-link" href="{{ property.link }}"></a>
+                        <div class="card-img-overlay-top text-right">
+                            <a class="card-fav-icon position-relative z-index-40 heart {{ property.is_liked }}"
+                                href="javascript: void();" data-id="{{ property.pk }}">
+                            <svg class="svg-icon text-white ">
                                 <use xlink:href="#heart-1"></use>
                             </svg>
                         </a></div>

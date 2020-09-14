@@ -2072,7 +2072,7 @@ pre code {
 .form-control:focus {
   color: #495057;
   background-color: #fff;
-  border-color: #98a6fb;
+  border-color: #50e3c2;
   outline: 0;
   box-shadow: 0 0 0 0.2rem rgba(78, 102, 248, 0.25);
 }
@@ -3795,11 +3795,11 @@ input[type="button"].btn-block {
 }
 
 .custom-control-input:focus ~ .custom-control-label::before {
-  box-shadow: 0 0 0 0.2rem rgba(78, 102, 248, 0.25);
+  box-shadow: 0 0 0 0.2rem rgba(80, 227, 194, 0.25);
 }
 
 .custom-control-input:focus:not(:checked) ~ .custom-control-label::before {
-  border-color: #98a6fb;
+  border-color: #50e3c2;
 }
 
 .custom-control-input:not(:disabled):active ~ .custom-control-label::before {
@@ -3941,7 +3941,7 @@ input[type="button"].btn-block {
 }
 
 .custom-select:focus {
-  border-color: #98a6fb;
+  border-color: #50e3c2;
   outline: 0;
   box-shadow: 0 0 0 0.2rem rgba(78, 102, 248, 0.25);
 }
@@ -4005,8 +4005,8 @@ input[type="button"].btn-block {
 }
 
 .custom-file-input:focus ~ .custom-file-label {
-  border-color: #98a6fb;
-  box-shadow: 0 0 0 0.2rem rgba(78, 102, 248, 0.25);
+  border-color: #50e3c2;
+  box-shadow: 0 0 0 0.2rem rgba(80, 227, 194, 0.25);
 }
 
 .custom-file-input[disabled] ~ .custom-file-label,
@@ -14767,4 +14767,8 @@ STYLE SWITCHER FOR DEMO
 
 #style-switch h4 {
   color: #495057;
+}
+
+.form-control:focus {
+   box-shadow: 0 0 0 0.2rem rgba(80, 227, 194, 0.25);
 }

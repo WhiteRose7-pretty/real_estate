@@ -16,6 +16,8 @@
 <script src="{% static 'js/waypoint/jquery.waypoints.min.js' %}"></script>
 <script src="{% static 'js/waypoint/infinite.min.js' %}"></script>
 <script src="{% static 'js/form/jquery.form.js' %}"></script>
+<script src="https://unpkg.com/@google/markerclustererplus@5.1.0/dist/markerclustererplus.min.js"></script>
+
 <script async defer
         src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places&key=AIzaSyD8A1j9FdYG0tGsPwf8Sa8aBOVkjHvGPws"></script>
 
@@ -55,6 +57,7 @@
         init_price_filter();
         read_data_Map();
         setup_ajax_form();
+        update_bb();
 
 
     });
@@ -103,17 +106,33 @@
             mapTypeId: google.maps.MapTypeId.ROADMAP
         };
         map = new google.maps.Map(document.getElementById('categorySideMap'), myOptions);
+        let markers = [];
+        for (let i = 0; i <data.length; i++) {
 
-        for (let i = 0; i < data.length; i++) {
-            console.log(data[i].fields.price);
-            display_marker(map, geocoder, data[i].fields.address , data[i].fields.zipcode,
+            if(i > 200){
+                break;
+            }
+
+            var marker = display_point(map, data[i].fields.lat, data[i].fields.lng,  data[i].fields.address , data[i].fields.zipcode,
                 '$'+ data[i].fields.price, '/media/'+ data[i].fields.photo);
+
+            markers.push(marker);
+            /*
+            var markerCluster = new MarkerClusterer(map, markers,
+                                    {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+
+            */
         }
 
-        read_boundary('california', map);
-        show_city_bound();
         var address = $('#search_location').val().split(',')[0];
-        show_city_bound(address, map);
+        console.log(address);
+        if(address){
+            show_city_bound(address, map);
+        }
+        else{
+            read_boundary('california', map);
+        }
+
 
     }
 
@@ -133,12 +152,53 @@
         });
     }
 
-    function display_marker(map, geocoder, address, zipcode ,price, image) {
+    function display_point(map, lat, lng, address, zipcode ,price, image,) {
+       var card = `<div class="marker-img-container">
+                <img src="${image}" class="marker-img">
+            </div>
+            <p class="m-1 text-muted text-sm"><b>${address}</b></p>
+            <p class="m-1 text-muted text-sm">${zipcode}</p>
+            <p class="m-1 text-primary text-sm"><b>${price}/mo</b></p>`;
+
+        var infowindow = new google.maps.InfoWindow(
+            {
+                content: card,
+                size: new google.maps.Size(200, 200)
+            });
+
+        const latlng = new google.maps.LatLng(lat, lng);
+        var marker = new google.maps.Marker({
+            position: latlng,
+            map: map,
+            icon: {
+                url:'data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg"><circle cx="5" cy="5" r="4.5" stroke="black" fill="#50e3c2" fill-opacity="1.0" stroke-width="0.5" /></svg>'),
+                size: new google.maps.Size(10, 10),
+                scaledSize: new google.maps.Size(10, 10),
+                anchor: new google.maps.Point(5, 5),
+                labelOrigin: new google.maps.Point(5, 5)
+              },
+            title: address,
+            scaledSize: new google.maps.Size(10, 10),
+            origin: new google.maps.Point(0, 0), // origin
+            anchor: new google.maps.Point(0, 0), // anchor
+        });
+
+        google.maps.event.addListener(marker, 'mouseover', function () {
+            infowindow.open(map, marker);
+        });
+
+        google.maps.event.addListener(marker, 'mouseout', function () {
+            infowindow.close(map, marker);
+        });
+
+        return marker;
+    }
+
+    function display_marker(map, geocoder, address, zipcode ,price, image, fn) {
         if (geocoder) {
-            geocoder.geocode({'address': address}, function (results, status) {
+            geocoder.geocode({'address': address + ',' + zipcode}, function (results, status) {
                 if (status === google.maps.GeocoderStatus.OK) {
                     if (status !== google.maps.GeocoderStatus.ZERO_RESULTS) {
-                        map.setCenter(results[0].geometry.location);
 
                         var card = `<div class="marker-img-container">
                                         <img src="${image}" class="marker-img">
@@ -168,16 +228,22 @@
 
                         google.maps.event.addListener(marker, 'mouseout', function () {
                             infowindow.close(map, marker);
+
                         });
 
+                        fn(marker);
                     } else {
-                        alert("No results found");
+                        console.log("No results found");
+
                     }
                 } else {
-                    alert("Geocode was not successful for the following reason: " + status);
+                    console.log("Geocode was not successful for the following reason: " + status);
+
                 }
             });
         }
+
+
     }
 
     function init_price_filter() {
@@ -199,7 +265,7 @@
             step: 100,
             range: {
                 'min': 0,
-                'max': 15000
+                'max': 30000
             }
         });
 
@@ -271,10 +337,13 @@
                     $(this).find("SimpleData").each(function () {
                         if($(this).attr('name') === 'NAME_2'){
                             if($(this).text() == city){
-                                $(this).parent().parent().parent().find('coordinates').each(function () {
-                                     var points = buildCoordinatesArrayFromString($(this).text());
+                                var index = 0;
+                                var temp = $(this).parent().parent().parent().find('coordinates').first();
+
+                                     var points = buildCoordinatesArrayFromString(temp.text());
+                                     console.log(points);
                                      draw_bound(points, map, '#0000ff');
-                                });
+
                             }
                         }
                     })
@@ -325,9 +394,7 @@
                         lat: parseFloat(points[i].getAttribute("lat"))
                     })
                 }
-
-                // Construct the polygon.
-
+                console.log(bound_data);
                 draw_bound(bound_data, map, '#0000ff');
 
             }
@@ -344,10 +411,20 @@
             fillOpacity: 0.02
         });
 
+        var bounds = new google.maps.LatLngBounds();
+        for(var i=0; i< points.length; i++){
+            bounds.extend(points[i])
+        }
+        map.fitBounds(bounds);
         // Draw the polygon on the desired map instance
         BucaramangaPolygon.setMap(map);
     }
 
+    function update_bb(){
+        var bed_text = $('#id_bed').find(":selected").text();
+        var bath_text = $('#id_bath').find(":selected").text();
+        $('#bed-bath').val(bed_text + ',  ' + bath_text);
+    }
     $(document).on('change', '#id_location', function () {
         submit_frm();
     });
@@ -362,24 +439,75 @@
     });
 
     $(document).on('change', '#id_bed', function () {
-        $('#search-frm').submit()
+        update_bb();
+        submit_frm();
+    });
+
+    $(document).on('change', '#id_bath', function () {
+        update_bb();
+        submit_frm();
     });
 
     $(document).on('change', '#slider-snap-value-from', function () {
-        $('#search-frm').submit()
+        submit_frm();
     });
 
     $(document).on('change', '#slider-snap-value-to', function () {
-        $('#search-frm').submit()
+        submit_frm();
     });
+
+    $(document).on('click', '#search', function () {
+        submit_frm();
+    });
+
 
     document.querySelector('#id_search_text').onkeyup = function (e) {
         if (e.keyCode === 13) {  // enter, return
-            $('#search-frm').submit()
+            submit_frm();
         }
     };
 
 
+    $(document).on('click', '.heart', function () {
+        var token = '{{csrf_token}}';
+        var login_check = $('#log').val();
+        var likes_btn = $(this);
+        var id = $(this).attr('data-id');
+        if(login_check === 'True'){
+            $.ajax({
+                headers: {
+                    "X-CSRFToken": token
+                },
+                url:'/property-likes/',
+                type: 'post',
+                data: {
+                    'id': id
+                },
+                success: function (data) {
+                    if(data.is_liked)
+                    {
+                        likes_btn.addClass('liked');
 
+                    }
+                    else{
+                        likes_btn.removeClass('liked');
+                    }
+
+                }
+            });
+        }
+        else{
+            window.location.href = '/authentication/';
+        }
+    });
+
+    $(document).on('click', '#bed-bath', function () {
+        $('.more-control').toggleClass('show');
+    });
+
+
+    $(document).on('click', '.more-close', function () {
+        $('.more-control').removeClass('show');
+    })
 
 </script>
