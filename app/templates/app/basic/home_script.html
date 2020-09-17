@@ -51,14 +51,13 @@
 
 <script>
     var map;
+    var waypoint;
     $(document).ready(function () {
 
         infinit_scroll();
         init_price_filter();
         read_data_Map();
-        setup_ajax_form();
         update_bb();
-
 
     });
 
@@ -85,15 +84,18 @@
 
     function init_map(data) {
         var geocoder;
+
         var autocomplete = new google.maps.places.Autocomplete((document.getElementById('search_location')), {
             types: ['(cities)'],
             componentRestrictions: {
                  country: ["us"],
             }
         });
+
         google.maps.event.addListener(autocomplete, 'place_changed', function() {
               submit_frm();
         });
+
         geocoder = new google.maps.Geocoder();
         const latlng = new google.maps.LatLng(36.771109, -119.637934);
         const myOptions = {
@@ -132,24 +134,22 @@
         else{
             read_boundary('california', map);
         }
-
-
     }
 
     function infinit_scroll() {
-        var infinite = new Waypoint.Infinite({
+        new Waypoint.Infinite({
             element: $('.infinite-container')[0],
             handler: function (direction) {
             },
             offset: 'bottom-in-view',
             onBeforePageLoad: function () {
-                $('.spinner-border').show();
+                console.log('here');
             },
             onAfterPageLoad: function (items) {
-                $('.spinner-border').hide();
                 console.log(items);
             }
         });
+
     }
 
     function display_point(map, lat, lng, address, zipcode ,price, image,) {
@@ -194,59 +194,7 @@
         return marker;
     }
 
-    function display_marker(map, geocoder, address, zipcode ,price, image, fn) {
-        if (geocoder) {
-            geocoder.geocode({'address': address + ',' + zipcode}, function (results, status) {
-                if (status === google.maps.GeocoderStatus.OK) {
-                    if (status !== google.maps.GeocoderStatus.ZERO_RESULTS) {
-
-                        var card = `<div class="marker-img-container">
-                                        <img src="${image}" class="marker-img">
-                                    </div>
-                                    <p class="m-1 text-muted text-sm"><b>${address}</b></p>
-                                    <p class="m-1 text-muted text-sm">${zipcode}</p>
-                                    <p class="m-1 text-primary text-sm"><b>${price}/mo</b></p>`;
-                        var infowindow = new google.maps.InfoWindow(
-                            {
-                                content: card,
-                                size: new google.maps.Size(200, 200)
-                            });
-
-                        var marker = new google.maps.Marker({
-                            position: results[0].geometry.location,
-                            map: map,
-                            icon:'/static/img/marker.svg',
-                            title: address,
-                            scaledSize: new google.maps.Size(10, 10),
-                            origin: new google.maps.Point(0, 0), // origin
-                            anchor: new google.maps.Point(0, 0), // anchor
-                        });
-
-                        google.maps.event.addListener(marker, 'mouseover', function () {
-                            infowindow.open(map, marker);
-                        });
-
-                        google.maps.event.addListener(marker, 'mouseout', function () {
-                            infowindow.close(map, marker);
-
-                        });
-
-                        fn(marker);
-                    } else {
-                        console.log("No results found");
-
-                    }
-                } else {
-                    console.log("Geocode was not successful for the following reason: " + status);
-
-                }
-            });
-        }
-
-
-    }
-
-    function init_price_filter() {
+     function init_price_filter() {
         var snapSlider = document.getElementById('slider-snap');
 
          var snapValues = [
@@ -274,33 +222,23 @@
             var temp = inputValues[handle].val();
             inputValues[handle].val(Math.round(values[handle]));
             snapValues[handle].innerHTML = Math.round(values[handle]);
-/*            if(temp !== inputValues[handle].val()){
-                submit_frm();
-            }
-*/
+
         });
     }
 
-    function setup_ajax_form(){
-        $('#search-frm').ajaxForm({
-        success:function(data)
-        {
-            $('.ajax-container').empty();
-            $('.ajax-container').html($.parseHTML(data));
-            infinit_scroll();
-        }
-    });
-    }
 
     function submit_frm(){
+        $('#categorySideMap').empty();
         var frmdata = $('#search-frm').serialize();
         $.ajax({
             type: 'get',
             url: '/',
             data: frmdata,
             success: function (data) {
-                $('.ajax-container').empty();
-                $('.ajax-container').html($.parseHTML(data));
+
+                $('#all-counts').text(data.counts);
+                $('.infinite-container').html($.parseHTML(data.content));
+                $('#more-container').html($.parseHTML(data.more_link));
                 window.history.pushState(null, 'real estate', this.url);
                 infinit_scroll();
                 read_data_Map();
@@ -341,7 +279,6 @@
                                 var temp = $(this).parent().parent().parent().find('coordinates').first();
 
                                      var points = buildCoordinatesArrayFromString(temp.text());
-                                     console.log(points);
                                      draw_bound(points, map, '#0000ff');
 
                             }
@@ -394,7 +331,6 @@
                         lat: parseFloat(points[i].getAttribute("lat"))
                     })
                 }
-                console.log(bound_data);
                 draw_bound(bound_data, map, '#0000ff');
 
             }
@@ -425,9 +361,6 @@
         var bath_text = $('#id_bath').find(":selected").text();
         $('#bed-bath').val(bed_text + ',  ' + bath_text);
     }
-    $(document).on('change', '#id_location', function () {
-        submit_frm();
-    });
 
 
     $(document).on('change', '#id_pet', function () {
@@ -449,12 +382,15 @@
     });
 
     $(document).on('change', '#slider-snap-value-from', function () {
+        console.log('here');
         submit_frm();
     });
 
     $(document).on('change', '#slider-snap-value-to', function () {
+        console.log('here');
         submit_frm();
     });
+
 
     $(document).on('click', '#search', function () {
         submit_frm();
@@ -467,6 +403,10 @@
         }
     };
 
+
+     $(document).on('click', '.noUi-touch-area', function () {
+        submit_frm();
+    });
 
     $(document).on('click', '.heart', function () {
         var token = '{{csrf_token}}';

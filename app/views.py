@@ -11,13 +11,9 @@ import json
 from googlegeocoder import GoogleGeocoder
 
 
-
 def home(request):
-    # update_data()
-
     properties_all = RealEstate.objects.order_by('-id').all()
 
-    # delete_data(properties_all)
     search_form = PropertySearch(data=request.GET)
 
     # if location, filter by location
@@ -57,6 +53,7 @@ def home(request):
     print(len(properties_all))
 
     page = request.GET.get('page', 1)
+    print('page:', page)
     paginator_property = Paginator(properties_all, 12)
 
     try:
@@ -94,8 +91,15 @@ def home(request):
         return HttpResponse(ps_json, content_type='application/json')
 
     if request.is_ajax() and page == '1':
-        html_data = render_to_string('app/basic/content.html', context, request)
-        return JsonResponse(html_data, safe=False)
+        counts = len(properties_all)
+        content = render_to_string('app/basic/content.html', context, request)
+        more_link = render_to_string('app/basic/more_link.html', context, request)
+        data = {
+            'counts': counts,
+            'content': content,
+            'more_link': more_link
+        }
+        return JsonResponse(data, safe=False)
 
     return render(request, 'app/home.html', context)
 
@@ -135,3 +139,8 @@ def update(request):
     return HttpResponseRedirect("/")
 
 
+def is_val_in_list(val, arr):
+    for item in arr:
+        if val == item:
+            return True
+    return False

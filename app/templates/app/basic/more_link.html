@@ -1,0 +1,11 @@
+
+
+
+{% if properties.has_next %}
+    {% if not request.GET.search_ %}
+        <a class="infinite-more-link" href="?page={{ properties.next_page_number }}">{{ properties.next_page_number }}</a>
+    {% else %}
+        <a class="infinite-more-link"
+           href="{{ request.get_full_path  }}&page={{ properties.next_page_number }}">{{ properties.next_page_number }}</a>
+    {% endif %}
+{% endif %}

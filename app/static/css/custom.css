@@ -70,3 +70,7 @@ a:hover {
     background-repeat: no-repeat;
     background-position: center;
 }
+
+#categorySideMap{
+    background: url("../img/load.gif") center no-repeat ;
+}
