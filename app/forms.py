@@ -1,5 +1,6 @@
 from django import forms
 from dashboard.models import RentType, Pets
+from .models import Preference
 
 BED_CHOICE = (
     ('0', 'ALL BEDS'),
@@ -55,3 +56,10 @@ class PropertySearch(forms.Form):
         widget=forms.TextInput(attrs={'class': 'form-control ', 'placeholder': 'Advanced Filter'}), required=False)
     near_check = forms.BooleanField(widget=forms.CheckboxInput(attrs={'class': 'custom-control-input'}),
                                     required=False)
+
+
+class AutoComplete(forms.Form):
+    autocomplete = forms.ModelChoiceField(queryset=Preference.objects.all(), empty_label=None,
+                                          widget=forms.SelectMultiple())
+
+

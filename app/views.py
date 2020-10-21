@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.template.loader import render_to_string
 from dashboard.models import RealEstate, RentType, CustomUser
-from .forms import PropertySearch
+from .forms import PropertySearch, AutoComplete
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.core import serializers
@@ -21,6 +21,7 @@ def home(request):
     if location:
         location = location.split(',')[0]
         properties_all = properties_all.filter(zipcode__contains=location)
+
 
     # if lent type, filter by rent type
     lent_type = request.GET.getlist('rent_type')
@@ -144,3 +145,11 @@ def is_val_in_list(val, arr):
         if val == item:
             return True
     return False
+
+
+def test(request):
+    form = AutoComplete()
+    context = {
+        'form': form
+    }
+    return render(request, 'app/test.html', context)
