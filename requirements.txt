@@ -19,7 +19,7 @@ click-didyoumean==0.0.3
 click-repl==0.1.6
 colorama==0.4.3
 constantly==15.1.0
-cryptography==2.9.2
+cryptography==3.2
 daphne==2.5.0
 defusedxml==0.6.0
 distlib==0.3.1
