@@ -56,7 +56,7 @@ msgpack==0.5.6
 numpy==1.18.1
 oauthlib==3.1.0
 pilkit==2.0
-Pillow==7.1.2
+Pillow==8.2.0
 pipenv==2018.11.26
 prompt-toolkit==3.0.8
 psycopg2==2.8.5
